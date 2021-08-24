@@ -6,6 +6,7 @@
 # @Software: PyCharm
 import cv2, os, time, paddle, numpy as np
 from paddleseg.utils.FilepathFilenameFileext import filepath_filename_fileext
+from paddleseg.transforms.transforms import Normalize
 from configs.user_cfg import classes, VOC_COLORMAP
 from paddleseg.core import infer
 from paddleseg.utils import get_sys_env
@@ -17,6 +18,14 @@ import paddle.nn.functional as F
 cc_area_thresh = 300 # 连通域阈值，过滤面积小于该阈值的目标
 score_threshold = 0.99 # 置信度阈值，过滤置信度小于该阈值的目标
 
+
+def normalize(im):
+    mean = (0.5, 0.5, 0.5)
+    std = (0.5, 0.5, 0.5)
+    im = im.astype(np.float32, copy=False) / 255.0
+    im -= mean
+    im /= std
+    return im
 
 def get_obj_score(score_map, cc_labels, cc_label_id, class_id):
     '''
@@ -101,6 +110,7 @@ model.eval()
 
 def main(img_path, out_img_path):
     image = cv2.imread(img_path)
+    image = normalize(image)
     image = np.transpose(image, (2, 0, 1)) # [h, w, c] -> [c, h, w]
     image = image[np.newaxis, :] # [c, h, w] -> [n, c , h, w]
     t1 = time.time()
