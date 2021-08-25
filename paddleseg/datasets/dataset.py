@@ -69,7 +69,7 @@ class Dataset(paddle.io.Dataset):
                  train_path=None,
                  val_path=None,
                  test_path=None,
-                 separator='\t',
+                 separator=' ',
                  ignore_index=255,
                  edge=False):
         self.dataset_root = dataset_root
@@ -89,37 +89,27 @@ class Dataset(paddle.io.Dataset):
 
         self.dataset_root = dataset_root
         if not os.path.exists(self.dataset_root):
-            raise FileNotFoundError('there is not `dataset_root`: {}.'.format(
-                self.dataset_root))
+            raise FileNotFoundError('there is not `dataset_root`: {}.'.format(self.dataset_root))
 
         if mode == 'train':
             if train_path is None:
-                raise ValueError(
-                    'When `mode` is "train", `train_path` is necessary, but it is None.'
-                )
+                raise ValueError('When `mode` is "train", `train_path` is necessary, but it is None.')
             elif not os.path.exists(train_path):
-                raise FileNotFoundError(
-                    '`train_path` is not found: {}'.format(train_path))
+                raise FileNotFoundError('`train_path` is not found: {}'.format(train_path))
             else:
                 file_path = train_path
         elif mode == 'val':
             if val_path is None:
-                raise ValueError(
-                    'When `mode` is "val", `val_path` is necessary, but it is None.'
-                )
+                raise ValueError('When `mode` is "val", `val_path` is necessary, but it is None.')
             elif not os.path.exists(val_path):
-                raise FileNotFoundError(
-                    '`val_path` is not found: {}'.format(val_path))
+                raise FileNotFoundError('`val_path` is not found: {}'.format(val_path))
             else:
                 file_path = val_path
         else:
             if test_path is None:
-                raise ValueError(
-                    'When `mode` is "test", `test_path` is necessary, but it is None.'
-                )
+                raise ValueError('When `mode` is "test", `test_path` is necessary, but it is None.')
             elif not os.path.exists(test_path):
-                raise FileNotFoundError(
-                    '`test_path` is not found: {}'.format(test_path))
+                raise FileNotFoundError('`test_path` is not found: {}'.format(test_path))
             else:
                 file_path = test_path
 

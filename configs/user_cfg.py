@@ -18,3 +18,7 @@ model_path = 'output/iter_10000/model.pdparams'
 
 # pieces size
 crop_size = (480, 480)
+
+# 预测参数
+cc_area_thresh = 300 # 连通域阈值，过滤面积小于该阈值的目标
+score_threshold = 0.99 # 置信度阈值，过滤置信度小于该阈值的目标

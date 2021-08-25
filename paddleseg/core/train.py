@@ -40,12 +40,10 @@ def loss_computation(logits_list, labels, losses, edges=None):
         logits = logits_list[i]
         loss_i = losses['types'][i]
         # Whether to use edges as labels According to loss type.
-        if loss_i.__class__.__name__ in ('BCELoss',
-                                         'FocalLoss') and loss_i.edge_label:
+        if loss_i.__class__.__name__ in ('BCELoss', 'FocalLoss') and loss_i.edge_label:
             loss_list.append(losses['coef'][i] * loss_i(logits, edges))
         elif loss_i.__class__.__name__ in ("KLLoss", ):
-            loss_list.append(losses['coef'][i] * loss_i(
-                logits_list[0], logits_list[1].detach()))
+            loss_list.append(losses['coef'][i] * loss_i(logits_list[0], logits_list[1].detach()))
         else:
             loss_list.append(losses['coef'][i] * loss_i(logits, labels))
     return loss_list
@@ -107,8 +105,7 @@ def train(model,
         optimizer = paddle.distributed.fleet.distributed_optimizer(optimizer)  # The return is Fleet object
         ddp_model = paddle.distributed.fleet.distributed_model(model)
 
-    batch_sampler = paddle.io.DistributedBatchSampler(
-        train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+    batch_sampler = paddle.io.DistributedBatchSampler(train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
 
     loader = paddle.io.DataLoader(
         train_dataset,
@@ -159,9 +156,7 @@ def train(model,
             if fp16:
                 with paddle.amp.auto_cast(
                         enable=True,
-                        custom_white_list={
-                            "elementwise_add", "batch_norm", "sync_batch_norm"
-                        },
+                        custom_white_list={"elementwise_add", "batch_norm", "sync_batch_norm"},
                         custom_black_list={'bilinear_interp_v2'}):
                     if nranks > 1:
                         logits_list = ddp_model(images)

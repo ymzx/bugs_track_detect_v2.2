@@ -2,21 +2,17 @@
 # @Time    : 2021/5/8
 # @Author  : JWDUAN
 # @Email   : 494056012@qq.com
-# @File    : big_img_predict.py
+# @File    : big_img_predict_with_pieces.py
 # @Software: PyCharm
 import cv2, os, time, paddle, numpy as np
 from paddleseg.utils.FilepathFilenameFileext import filepath_filename_fileext
-from paddleseg.transforms.transforms import Normalize
 from configs.user_cfg import classes, VOC_COLORMAP
 from paddleseg.core import infer
 from paddleseg.utils import get_sys_env
 from paddleseg import utils
-from configs.user_cfg import model_path, cfg_path
+from configs.user_cfg import model_path, cfg_path, cc_area_thresh, score_threshold
 from paddleseg.cvlibs import Config
 import paddle.nn.functional as F
-
-cc_area_thresh = 300 # 连通域阈值，过滤面积小于该阈值的目标
-score_threshold = 0.99 # 置信度阈值，过滤置信度小于该阈值的目标
 
 
 def normalize(im):
@@ -62,10 +58,14 @@ def parse_obj_postion_score(score_map, class_map):
     nlabels, labels, stats, centroids = cv2.connectedComponentsWithStats(class_map)  # 连通域分析
     cc_label_classes_map = dict()
     for idx_label in range(nlabels):
-        obj_classes = class_map[int(centroids[idx_label][1])][int(centroids[idx_label][0])]
-        cc_label_classes_map[idx_label] = obj_classes
+        try:
+            obj_classes = class_map[int(centroids[idx_label][1])][int(centroids[idx_label][0])]
+            cc_label_classes_map[idx_label] = obj_classes
+        except:
+            cc_label_classes_map[idx_label] = None # centroids 可能为[[nan, nan],[0.45, 0.87]]
     blocks = []
     for k, stat in enumerate(stats):
+        if cc_label_classes_map[k] is None: continue
         temp = dict()
         [x0, y0, width, height, area] = stat
         x0, y0, width, height = int(x0), int(y0), int(width), int(height)  # 便于json格式转化
@@ -110,7 +110,7 @@ model.eval()
 
 def main(img_path, out_img_path):
     image = cv2.imread(img_path)
-    image = normalize(image)
+    image = normalize(image) # 归一化
     image = np.transpose(image, (2, 0, 1)) # [h, w, c] -> [c, h, w]
     image = image[np.newaxis, :] # [c, h, w] -> [n, c , h, w]
     t1 = time.time()

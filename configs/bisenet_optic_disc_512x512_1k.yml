@@ -4,8 +4,8 @@ iters: 1000
 
 train_dataset:
   type: Dataset
-  dataset_root: data/bug_seg
-  train_path: data/bug_seg/train_list.txt
+  dataset_root: data/insects
+  train_path: data/insects/train_list.txt
   num_classes: 4
   transforms:
     - type: Resize
@@ -16,8 +16,8 @@ train_dataset:
 
 val_dataset:
   type: Dataset
-  dataset_root: data/bug_seg
-  val_path: data/bug_seg/val_list.txt
+  dataset_root: data/insects
+  val_path: data/insects/val_list.txt
   num_classes: 4
   transforms:
     - type: Resize
