@@ -103,6 +103,8 @@ env_info = get_sys_env()
 place = 'gpu' if env_info['Paddle compiled with cuda'] and env_info['GPUs used'] else 'cpu'
 paddle.set_device(place)
 cfg = Config(cfg_path)
+val_dataset = cfg.val_dataset
+transforms = val_dataset.transforms
 model = cfg.model
 utils.utils.load_entire_model(model, model_path)
 model.eval()
@@ -110,8 +112,13 @@ model.eval()
 
 def main(img_path, out_img_path):
     image = cv2.imread(img_path)
+    image, _ = transforms(image)
+    '''
+    transforms process: 
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  # 之前预测失败就是缺失这步
     image = normalize(image) # 归一化
     image = np.transpose(image, (2, 0, 1)) # [h, w, c] -> [c, h, w]
+    '''
     image = image[np.newaxis, :] # [c, h, w] -> [n, c , h, w]
     t1 = time.time()
     print('------input model tensor size, %s ------'% str(image.shape))
@@ -124,6 +131,7 @@ def main(img_path, out_img_path):
     print('------Cal score_class timecost: %s s------'%str(round(t3-t2,2)))
     class_map = class_map.numpy().astype(np.int8)
     blocks = parse_obj_postion_score(score_map, class_map)
+    print('blocks', blocks)
     t4 = time.time()
     print('------Cal parse obj postion and score timecost: %s s------' % str(round(t4 - t3, 2)))
     print('计算各阶段耗时分析：', round(t2-t1, 3), round(t3-t2, 3), round(t4-t3, 3))
@@ -135,7 +143,7 @@ def main(img_path, out_img_path):
 
 
 if __name__ == '__main__':
-    img_path = 'docs/images/440.jpg'
+    img_path = r'D:\enn-work\project\bug_detect_v2.2\data\insects\crop_data\7.jpg'
     out_img_path = 'output/img_test_result'
     main(img_path, out_img_path)
 

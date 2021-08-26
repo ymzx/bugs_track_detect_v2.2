@@ -1,4 +1,4 @@
-batch_size: 4
+batch_size: 16
 iters: 1000
 
 
@@ -20,8 +20,6 @@ val_dataset:
   val_path: data/insects/val_list.txt
   num_classes: 4
   transforms:
-    - type: Resize
-      target_size: [120, 120]
     - type: Normalize
   mode: val
 
@@ -32,7 +30,7 @@ optimizer:
 
 lr_scheduler:
   type: PolynomialDecay
-  learning_rate: 0.01
+  learning_rate: 0.005
   end_lr: 0
   power: 0.9
 

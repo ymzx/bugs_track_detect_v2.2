@@ -148,8 +148,7 @@ def train(model,
             images = data[0]
             labels = data[1].astype('int64')
             edges = None
-            if len(data) == 3:
-                edges = data[2].astype('int64')
+            if len(data) == 3: edges = data[2].astype('int64')
             if hasattr(model, 'data_format') and model.data_format == 'NHWC':
                 images = images.transpose((0, 2, 3, 1))
 

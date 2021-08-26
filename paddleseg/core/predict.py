@@ -118,7 +118,6 @@ def predict(model,
             pred = pred.numpy().astype('uint8')
 
             # get the saved name
-            # get the saved name
             filepath, shotname, extension = filepath_filename_fileext(im_path)
             im_file = shotname+extension
 

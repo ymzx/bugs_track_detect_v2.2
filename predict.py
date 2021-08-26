@@ -7,9 +7,7 @@ from configs.user_cfg import model_path, cfg_path, image_path, save_dir
 
 def get_image_list(image_path):
     """Get image list"""
-    valid_suffix = [
-        '.JPEG', '.jpeg', '.JPG', '.jpg', '.BMP', '.bmp', '.PNG', '.png'
-    ]
+    valid_suffix = ['.JPEG', '.jpeg', '.JPG', '.jpg', '.BMP', '.bmp', '.PNG', '.png']
     image_list = []
     image_dir = None
     if os.path.isfile(image_path):
@@ -27,14 +25,11 @@ def get_image_list(image_path):
         image_dir = image_path
         for root, dirs, files in os.walk(image_path):
             for f in files:
-                if '.ipynb_checkpoints' in root:
-                    continue
+                if '.ipynb_checkpoints' in root: continue
                 if os.path.splitext(f)[-1] in valid_suffix:
                     image_list.append(os.path.join(root, f))
     else:
-        raise FileNotFoundError(
-            '`--image_path` is not found. it should be an image file or a directory including images'
-        )
+        raise FileNotFoundError('`--image_path` is not found. it should be an image file or a directory including images')
 
     if len(image_list) == 0:
         raise RuntimeError('There are not image file in `--image_path`')
@@ -50,8 +45,7 @@ def main():
 
     cfg = Config(cfg_path)
     val_dataset = cfg.val_dataset
-    if not val_dataset:
-        raise RuntimeError('The verification dataset is not specified in the configuration file.')
+    if not val_dataset: raise RuntimeError('The verification dataset is not specified in the configuration file.')
 
     msg = '\n---------------Config Information---------------\n'
     msg += str(cfg)

@@ -57,10 +57,13 @@ def cal_score_class(net_outs):
     return score_maps, label_maps
 
 
+# 模型加载
 env_info = get_sys_env()
 place = 'gpu' if env_info['Paddle compiled with cuda'] and env_info['GPUs used'] else 'cpu'
 paddle.set_device(place)
 cfg = Config(cfg_path)
+val_dataset = cfg.val_dataset
+transforms = val_dataset.transforms
 model = cfg.model
 utils.utils.load_entire_model(model, model_path)
 model.eval()
@@ -68,9 +71,11 @@ model.eval()
 
 def main(img_path, out_img_path):
     image = cv2.imread(img_path)
-    image = normalize(image)
     t1 = time.time()
     X, coordinates = cut_img_into_pieces(image, crop_size) # 待优化,耗时0.2s [n, c, h, w]
+    print('X', X.shape)
+    X, _ = transforms(X)
+    print('X',X.shape)
     t2 = time.time()
     print('------Cal cut img timecost: %s s------' % (round(t2 - t1, 3)))
     net_outs = predict(X.astype('float32'), model) # 模型计算 [n, len(class), h, w]
