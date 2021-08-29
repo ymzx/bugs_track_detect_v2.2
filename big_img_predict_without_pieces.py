@@ -110,8 +110,10 @@ utils.utils.load_entire_model(model, model_path)
 model.eval()
 
 
-def main(img_path, out_img_path):
-    image = cv2.imread(img_path)
+def main(img_path, out_img_path='output/img_test_result', save=False):
+    t0 = time.time()
+    image = img_path
+    if type(img_path) is str: image = cv2.imread(img_path)
     image, _ = transforms(image)
     '''
     transforms process: 
@@ -134,10 +136,13 @@ def main(img_path, out_img_path):
     t4 = time.time()
     print('------Cal parse obj postion and score timecost: %s s------' % str(round(t4 - t3, 2)))
     print('计算各阶段耗时分析：', round(t2-t1, 3), round(t3-t2, 3), round(t4-t3, 3))
+    print('result: ',blocks)
     # 画图
-    filepath, shotname, extension = filepath_filename_fileext(img_path)
-    out_img_path = os.path.join(out_img_path, shotname + extension)
-    draw_obj_info(cv2.imread(img_path), blocks, out_img_path)
+    if save:
+        filepath, shotname, extension = filepath_filename_fileext(img_path)
+        out_img_path = os.path.join(out_img_path, shotname + extension)
+        draw_obj_info(cv2.imread(img_path), blocks, out_img_path)
+    print('总耗时：%s' % str(round(t4 - t0, 3)))
     return blocks
 
 
