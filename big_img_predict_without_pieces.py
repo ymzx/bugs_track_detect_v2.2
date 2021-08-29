@@ -131,7 +131,6 @@ def main(img_path, out_img_path):
     print('------Cal score_class timecost: %s s------'%str(round(t3-t2,2)))
     class_map = class_map.numpy().astype(np.int8)
     blocks = parse_obj_postion_score(score_map, class_map)
-    print('blocks', blocks)
     t4 = time.time()
     print('------Cal parse obj postion and score timecost: %s s------' % str(round(t4 - t3, 2)))
     print('计算各阶段耗时分析：', round(t2-t1, 3), round(t3-t2, 3), round(t4-t3, 3))
@@ -143,9 +142,12 @@ def main(img_path, out_img_path):
 
 
 if __name__ == '__main__':
-    img_path = r'D:\enn-work\project\bug_detect_v2.2\data\insects\crop_data\7.jpg'
+    img_path = 'docs/images/440.jpg'
     out_img_path = 'output/img_test_result'
+    start = time.time()
     main(img_path, out_img_path)
+    end = time.time()
+    print('总耗时：%s' % str(round(end - start, 3)))
 
 
 

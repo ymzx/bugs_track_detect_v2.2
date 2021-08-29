@@ -57,6 +57,15 @@ def cal_score_class(net_outs):
     return score_maps, label_maps
 
 
+def custom_transforms(X):
+    images = []
+    for x in X:
+        image, _ = transforms(x)
+        images.append(image)
+    images = np.array(images)
+    return images
+
+
 # 模型加载
 env_info = get_sys_env()
 place = 'gpu' if env_info['Paddle compiled with cuda'] and env_info['GPUs used'] else 'cpu'
@@ -73,11 +82,10 @@ def main(img_path, out_img_path):
     image = cv2.imread(img_path)
     t1 = time.time()
     X, coordinates = cut_img_into_pieces(image, crop_size) # 待优化,耗时0.2s [n, c, h, w]
-    print('X', X.shape)
-    X, _ = transforms(X)
-    print('X',X.shape)
     t2 = time.time()
     print('------Cal cut img timecost: %s s------' % (round(t2 - t1, 3)))
+    X = np.transpose(X, (0, 2, 3, 1))
+    X = custom_transforms(X)
     net_outs = predict(X.astype('float32'), model) # 模型计算 [n, len(class), h, w]
     t3 = time.time()
     print('------Cal predict timecost: %s s------' % (round(t3 - t2, 3)))
@@ -105,4 +113,7 @@ def main(img_path, out_img_path):
 if __name__ == '__main__':
     img_path = 'docs/images/440.jpg'
     out_img_path = 'output/img_test_result'
+    start = time.time()
     main(img_path, out_img_path)
+    end = time.time()
+    print('总耗时：%s' % str(round(end-start, 3)))
